@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AZInvex Signals Result</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="/css/bulma-pricingtable.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script>
+        $( function() {
+          $( "#datepicker" ).datepicker({
+            changeMonth: true,
+            changeYear: true
+          });
+        } );
+        </script>
+  </head>
+  <body>
+<nav class="navbar is-warning">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+        
+            <img src="http://azinvex.com/images/Logo-Az-invex.png" alt="AZInvex Signals" width="112" height="28">
+        
+        </a>
+        <div class="navbar-burger burger" data-target="navMenuColorlight-example">
+        <span></span>
+        <span></span>
+        <span></span>
+        </div>
+    </div>
+
+    <div id="navMenuColorlight-example" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="http://azinvex.com">
+                <span class="icon">
+                    <i class="fas fa-home"></i>
+                </span>
+                Trở về trang chủ
+            </a>
+        </div>
+    </div>
+</nav>
+<section class="hero is-link" style="background-image:url('/bg.png')">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered">
+              <div class="column">
+                <p class="title">
+                  TRANG BẮN TÍN HIỆU FOREX
+                </p>
+                <p class="subtitle">
+                 
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="hero-foot">
+          <div class="container">
+            <nav class="tabs is-boxed">
+              <ul>
+                <li >
+                  <a href="/">Tín Hiệu</a>
+                </li>
+                <li class="is-active">
+                  <a href="/result">Kết Quả</a>
+                </li>
+                <% if(token){ %>
+                    <li><a href="/admin">Bắn tín hiệu</a></li>
+                  <% }%>
+              </ul>
+              </nav>
+            </div>
+          </div>
+        
+      </section>
+
+
+</section>
+
+  <section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-one-thirds">
+                <nav class="panel">
+                        <p class="panel-heading">
+                           Kết Quả
+                        </p>
+                       
+                        <a class="panel-block">
+                            <span class="panel-icon">
+                            <i class="fas fa-code-branch"></i>
+                            </span>
+                            Số pips đạt được : <%= infoUser ?infoUser.profit:0  %> pips
+                        </a>
+                        <a class="panel-block">
+                            <span class="panel-icon">
+                            <i class="fas fa-code-branch"></i>
+                            </span>
+                            Số Lệnh thắng :<%= infoUser ?infoUser.won:0 %>
+                        </a>
+                        <a class="panel-block">
+                            <span class="panel-icon">
+                            <i class="fas fa-code-branch"></i>
+                            </span>
+                            Số Lệnh Thua :<%= infoUser ?infoUser.lost:0 %>
+                        </a>
+                      
+                    </nav>
+    
+            </div>
+            <div class="is-divider-vertical" data-content="OR"></div>
+            <div class="column  is-two-thirds">
+                <input style="max-width: 120px;" class="input" type="text" id="datepicker">
+                <h3 class="subtitle is-3">Daily Profit: <span id="daily-profit"><%= dailyProfit %></span></h3>
+                <div class="pricing-table is-horizontal">
+                        <%  
+                        signalList.forEach((signal, index) => {
+                          const { typeSignal, openPrice,closePrice,closeAt, stoploss, takeprofit, startAt, symbol, ticket,profit} = signal;
+                          moment.locale('vi-VN');
+                          const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
+                          const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
+                        %>  
+                <div class="pricing-plan">
+                    <div class="plan-header"><%= symbol %></div>
+                    <div class="plan-items">
+                    <div class="plan-item">Open Price:  <strong><%= openPrice %></strong></div>
+                    <div class="plan-item">Takeprofit:  <strong><%= takeprofit %></strong></div>
+                    <div class="plan-item">Open Time : <strong> <%= datestart %></strong></div>
+                    <div class="plan-item">Close Price:  <strong><%= closePrice %></strong></div>
+                    <div class="plan-item">Stoploss :   <strong><%= stoploss %></strong></div>
+                    <div class="plan-item">Close Time : <strong> <%= dateclose %></strong></div>
+                    </div>
+                    <div class="plan-footer">
+                    <% if(profit >= 0){ %>
+                        <div style="color: green;" class="plan-price">
+                    <% }else{ %>
+                        <div style="color: red;" class="plan-price">
+                    <% } %>
+                   <span class="plan-price-amount"><%= profit %></span><b>pips</b></div>
+                    <% if(typeSignal){ %>
+                      <button class="button is-fullwidth is-danger">SELL</button>
+                    <% }else{ %> 
+                      <button class="button is-fullwidth is-success">BUY</button>
+                     <% } %>
+                    </div>
+                </div>
+                <% }); %>
+    
+            </div>
+        </div>
+            
+    </div>
+  </section>
+  <script src="/js/result.js"></script>
+  </body>
+</html>

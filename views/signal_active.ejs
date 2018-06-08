@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="bD6qF0s5L18XPiOWYDHrZgKE-m8VJIeIGhq2f1_Gd6Q" />
+    <title>AZInvex Live Signals
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/bulma-pricingtable.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+
+    
+  </head>
+  <body>
+    <nav class="navbar is-warning">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img src="http://azinvex.com/images/Logo-Az-invex.png" alt="AZInvex Signals" width="112" height="28">
+        </a>
+        <div class="navbar-burger burger" data-target="navMenuColorlight-example">
+          <span>
+          </span>
+          <span>
+          </span>
+          <span>
+          </span>
+        </div>
+      </div>
+      <div id="navMenuColorlight-example" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="http://azinvex.com">
+            <span class="icon">
+              <i class="fas fa-home">
+              </i>
+            </span>
+            Trở về trang chủ
+          </a>
+
+        </div>
+   
+      </div>
+    </nav>
+    <section class="hero is-link" style="background-image:url('/bg.png')">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column">
+              <p class="title">
+                TRANG BẮN TÍN HIỆU FOREX
+              </p>
+              <p class="subtitle">
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-foot">
+        <div class="container">
+          <nav class="tabs is-boxed">
+            <ul>
+              <li class="is-active">
+                <a href="/">Tín Hiệu
+                </a>
+              </li>
+              <li>
+                <a href="/result">Kết Quả
+                </a>
+              </li>
+              <% if(token){ %>
+                <li><a href="/admin">Bắn tín hiệu</a></li>
+              <% }%>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </section>
+    <section class="hero is-primary">
+        <div class="hero-body">
+          <div class="container">
+            <h1 class="title">
+              Tín hiệu trong ngày
+            </h1>
+            <h2 class="subtitle">
+              Tín hiệu được cập nhật liên tục theo thời gian thực trong ngày
+            </h2>
+          </div>
+        </div>
+      </section>
+    </section>
+  <section class="section">
+    <div class="container">
+      <h2 class="subtitle has-text-danger">Tín hiệu từ USDNOK là dùng để kiểm tra hệ thống, không phải tín hiệu để giao dịch</h2>
+      <div class="pricing-table is-horizontal">     
+          <%  
+          signalList.forEach((signal, index) => {
+            const { typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, profit, status,closeAt,closePrice} = signal;
+            moment.locale('vi-VN');
+            const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
+            const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
+            if(closeAt == 0){ 
+          %>          
+          <div id="<%= ticket %>" class="pricing-plan">
+            <div class="plan-header"><%= symbol %>
+            </div>
+            <div class="plan-items">
+              <div class="plan-item">Openprice:  
+                <strong><%= openPrice %>
+                </strong>
+              </div>
+              <div class="plan-item">Takeprofit:  
+                <strong id="tp-<%= ticket %>"><%= takeprofit %>
+                </strong>
+              </div>
+              <div class="plan-item">Stoploss :   
+                <strong id="sl-<%= ticket %>"><%= stoploss %>
+                </strong>
+              </div>
+              <div class="plan-item">Time : 
+                <strong> <%= moment(startAt).fromNow(); %>
+                </strong>
+              </div>
+            </div>
+            <div class="plan-footer">
+              <div class="plan-price">
+                <span class="plan-price-amount">
+                  <span class="plan-price-currency">
+                  </span>
+                 
+                    <img width="60px" height="60px" src="/images/loading.gif"/>
+                            
+                 
+                  </div>
+                  <% if(typeSignal){ %>
+                    <button class="button is-fullwidth is-danger">SELL</button>
+                  <% }else{ %> 
+                    <button class="button is-fullwidth is-success">BUY</button>
+                   <% } %>
+              </div>
+            </div>
+            <% }else{ %>
+              <div class="pricing-plan">
+                  <div class="plan-header"><%= symbol %></div>
+                  <div class="plan-items">
+                  <div class="plan-item">Open Price:  <strong><%= openPrice %></strong></div>
+                  <div class="plan-item">Takeprofit:  <strong><%= takeprofit %></strong></div>
+                  <div class="plan-item">Open Time : <strong> <%= datestart %></strong></div>
+                  <div class="plan-item">Close Price:  <strong><%= closePrice %></strong></div>
+                  <div class="plan-item">Stoploss :   <strong ><%= stoploss %></strong></div>
+                  <div class="plan-item">Close Time : <strong> <%= dateclose %></strong></div>
+                  </div>
+                  <div class="plan-footer">
+                  <% if(profit >= 0){ %>
+                      <div style="color: green;" class="plan-price">
+                  <% }else{ %>
+                      <div style="color: red;" class="plan-price">
+                  <% } %>
+                 <span class="plan-price-amount"><%= profit %></span><b>pips</b></div>
+                  <% if(typeSignal){ %>
+                    <button class="button is-fullwidth is-danger">SELL</button>
+                  <% }else{ %> 
+                    <button class="button is-fullwidth is-success">BUY</button>
+                   <% } %>
+                  </div>
+              </div>
+
+            <%  }}); %>
+
+      
+            </div>
+            </section>
+            <script>var socket = io('/');
+              moment.locale('vi');
+              socket.on('modify-signal',function(msg){
+                  $('strong#sl-' + msg.ticket).text(msg.stoploss);
+                  $('strong#tp-' + msg.ticket).text(msg.takeprofit);
+              })
+              socket.on('new-signal', function (msg) {
+                var audio = new Audio('/plucky.mp3');
+                audio.play();
+                var { typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket } = msg;
+                var type = '<button class="button is-fullwidth is-danger">SELL</button>';
+                var date = moment(startAt).fromNow();
+                if (!typeSignal) type = '<button class="button is-fullwidth is-success">BUY</button>';
+                $(".pricing-table").prepend(`<div id="${ticket}" class="pricing-plan">
+      <div class="plan-header">${symbol}
+      </div>
+      <div class="plan-items">
+        <div class="plan-item">Openprice:  
+          <strong>${openPrice}
+          </strong>
+        </div>
+        <div class="plan-item">Takeprofit:  
+          <strong>${takeprofit}
+          </strong>
+        </div>
+        <div class="plan-item">Stoploss :   
+          <strong>${stoploss}
+          </strong>
+        </div>
+        <div class="plan-item">Time : 
+          <strong> ${date}
+          </strong>
+        </div>
+      </div>
+      <div class="plan-footer">
+        <div class="plan-price">
+          <span class="plan-price-amount">
+            <span class="plan-price-currency">
+            </span>
+            <img width="60px" height="60px" src="/images/loading.gif">
+            </span></div>
+
+              ${type}
+             
+        </div>
+      </div>` );
+              });
+              $(document).ready(function () {
+                socket.on('result-signal', function (msg) {
+                  $("#" + msg.ticket).remove();
+                  var { typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, profit, closePrice, closeAt } = msg;
+                  console.log(msg)
+                  var viewProfit = '<div style="color: green;" class="plan-price">';
+                  if (profit < 0) viewProfit = '<div style="color: red;" class="plan-price">';
+                  var type = '<button class="button is-fullwidth is-danger">SELL</button>';
+                  if (!typeSignal) type = '<button class="button is-fullwidth is-success">BUY</button>';
+                  const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
+                  const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
+                  $(".pricing-table").prepend(`
+        <div class="pricing-plan">
+        <div class="plan-header">${symbol}</div>
+        <div class="plan-items">
+        <div class="plan-item">Open Price:  <strong>${openPrice}</strong></div>
+        <div class="plan-item">Takeprofit:  <strong id="tp-${ticket}">${takeprofit}</strong></div>
+        <div class="plan-item">Open Time : <strong> ${datestart}</strong></div>
+        <div class="plan-item">Close Price:  <strong>${closePrice}</strong></div>
+        <div class="plan-item">Stoploss :   <strong id="sl-${ticket}">${stoploss}</strong></div>
+        <div class="plan-item">Close Time : <strong> ${dateclose}</strong></div>
+        </div>
+        <div class="plan-footer">
+        ${viewProfit}
+       <span class="plan-price-amount">${profit}</span><b>pips</b></div>
+       ${type}
+        </div>
+    </div>
+        ` )
+                })
+              });</script>
+          </body>
+        </html>

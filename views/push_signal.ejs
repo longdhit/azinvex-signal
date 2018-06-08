@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AZInvex Manage Signals</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  var socket = io('/');
+  $(document).ready(function(){
+    socket.on('result-signal', function (msg) {
+      $('#loading').hide();
+        $('#'+msg.ticket).remove();
+    });
+  });
+  $(function () {
+    var tags = [<%- symbolList %>];
+    $("#symbol").autocomplete({
+      source: tags
+    });
+  });
+</script>
+
+</head>
+
+<body>
+  <nav class="navbar is-warning">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="http://azinvex.com/images/Logo-Az-invex.png" alt="AZInvex Signals" width="112" height="28">
+      </a>
+      <div class="navbar-burger burger" data-target="navMenuColorlight-example">
+        <span>
+        </span>
+        <span>
+        </span>
+        <span>
+        </span>
+      </div>
+    </div>
+    <div id="navMenuColorlight-example" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="/">
+          <span class="icon">
+            <i class="fas fa-home">
+            </i>
+          </span>
+          Trở về trang chủ
+        </a>
+
+      </div>
+
+    </div>
+  </nav>
+  <section class="hero is-link" style="background-image:url('/bg.png')">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-vcentered">
+          <div class="column">
+            <p class="title">TRANG BẮN TÍN HIỆU FOREX</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-foot">
+      <div class="container">
+        <nav class="tabs is-boxed">
+          <ul>
+            <li>
+              <a href="/">Tín Hiệu</a>
+            </li>
+            <li>
+              <a href="/result">Kết Quả</a>
+            </li>
+            <li class="is-active">
+              <a href="/admin">Bắn tín hiệu</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+
+    <div class="container">
+
+
+      <div class="columns">
+        <div class="column is-4">
+          <form id="pushSignal" action="/admin" action="POST">
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">Cặp tiền
+                </label>
+              </div>
+              <div class="field-body">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <input name="symbol" required  id="symbol" class="input" type="text">
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label">Types
+                </label>
+              </div>
+              <div class="field-body">
+                <div class="field is-narrow">
+                  <div class="control">
+                    <label class="radio">
+                      <input checked="" value="0" type="radio" name="type"> Buy Market
+                    </label>
+                    <label class="radio">
+                      <input value="1" type="radio" name="type"> Sell Market
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">SL
+                </label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <input value="0" required min="0" name="stoploss" class="input" type="number" placeholder="Stoploss">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">TP
+                </label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <input value="0" required min="0" name="takeprofit" class="input" type="number" placeholder="Stoploss">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <!-- Left empty for spacing -->
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <button type="submit" id="ban_lenh" class="button is-primary">
+                      Bắn Lệnh
+                    </button>
+
+                    <button type="button" data-id="" id="sua_lenh" class="button is-primary is-hidden">
+                      Sửa Lệnh
+                    </button>
+
+                    <button type="button" id="huy_sua" class="button is-primary is-hidden">
+                      Hủy Sửa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+    
+        </div>
+        <div class="is-divider-vertical" data-content="OR">
+        </div>
+        <div class="column  is-8">
+          <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead id="signalActive">
+              <tr>
+                <th>Ticket</th>
+                <th>Loại lệnh</th>
+                <th>Cặp Tiền</th>
+                <th>Giá Mở Lệnh</th>
+                <th>Stoploss</th>
+                <th>Takeprofit</th>
+                <th>Thời Gian Mở</th>
+                <th>Hành Động</th>
+                <th>Hành Động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% 
+                     listSignal.forEach((signal, index) => {
+                     const { _id,typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket} = signal;
+                     var type="BUY";
+                     if(typeSignal) type="SELL"
+                     %>
+                <tr id="<%= ticket %>">
+                  <td> <%= ticket %> </td>
+                  <td> <%= type %> </td>
+                  <td> <%= symbol %> </td>
+                  <td> <%= openPrice %> </td>
+                  <td id="sl-<%= ticket %>"> <%= stoploss %> </td>
+                  <td id="tp-<%= ticket %>"> <%= takeprofit %> </td>
+                  <td> <%= moment(startAt).fromNow(); %> </td>
+                  <td> <a id="<%= ticket %>" data-href="/admin/<%= ticket %>" class="modify-signal button is-success">Sửa lệnh</button> </td>
+                  <td> <a id="<%= ticket %>" data-href="/admin/<%= ticket %>" class="stop-signal button is-danger">Tắt Lệnh</button></td>
+                </tr>
+                <% }); %>
+            </tbody>
+          </table>
+          <div id='loading' style='margin-left: 35%;display:none'>
+            <img width="100px" src='/loading.gif' />
+          </div>
+        </div>
+  </section>
+<script>$("#pushSignal").submit(function (event) {
+    $('#loading').show();
+    event.preventDefault();
+    var $form = $(this),
+      symbol = $form.find("input[name='symbol']").val(),
+      type = $form.find("input[name='type']:checked").val(),
+      stoploss = $form.find("input[name='stoploss']").val(),
+      takeprofit = $form.find("input[name='takeprofit']").val(),
+      url = $form.attr("action");
+    var posting = $.post(url, { symbol, type, stoploss, takeprofit });
+    posting.done(function (data) {
+      $('#loading').hide();
+      $(".noti-error").remove();
+      const {typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, comment } = data;
+      moment.locale('vi');
+      let date = moment(startAt).fromNow();
+      let type = "BUY";
+      if (typeSignal==1) type = "SELL"
+      $("#signalActive").append(
+        `
+       <tr id="${ticket}">
+       <td>${ticket}</td>
+       <td>${type}</td>
+       <td>${symbol}</td>
+       <td >${openPrice}</td>
+       <td id="sl-${ticket}">${stoploss}</td>
+       <td class="tp-${ticket}">${takeprofit}</td>
+       <td> ${date}</td>
+       <td>
+       <a id="${ticket}" data-href="/admin/${ticket}" class="modify-signal button is-success">Sửa lệnh</button>
+     </td>
+       <td><a id="${ticket}" data-href="/admin/${ticket}" class="stop-signal button is-danger">Tắt Lệnh</button></td>
+       </tr>`
+      );
+    });
+    posting.fail(function (data) {
+      $('#loading').hide();
+      $("#pushSignal").append(
+        `<div class="noti-error notification is-danger">
+            Error ${data.responseJSON.message}. Please try again !
+          </div>`
+      )
+    });
+  });
+    $('body').on('click', '.stop-signal', function () {
+      let url = $(this).data('href');
+      $('#loading').show();
+      $(".noti-error").remove();
+      $.ajax({ url, type: 'PATCH' });
+    });
+    $(document).ready(function () {
+
+// chinh sua lenh
+$('body').on('click', '.modify-signal', function () {
+  var id = $(this).attr('id');
+  var sl = $('tr#' + id + ' td')[4].innerHTML.trim();
+  var tp = $('tr#' + id + ' td')[5].innerHTML.trim();
+  var symbol = $('tr#' + id + ' td')[2].innerHTML.trim();
+  $('input[name="stoploss"]').val(sl);
+  $('input[name="takeprofit"]').val(tp);
+  $('input[name="symbol"]').val(symbol);
+  $("input[name='symbol']").attr('disabled', true);
+  $("input[name='type']").attr('disabled', true);
+  $("#ban_lenh").addClass('is-hidden');
+  $("#sua_lenh").data('id', id);
+  $("#sua_lenh").removeClass('is-hidden');
+  $("#huy_sua").removeClass('is-hidden');
+});
+
+$("#sua_lenh").click(function (event) {
+
+  $('#loading').show();
+  event.preventDefault();
+  var ticket = $(this).data('id');
+  var stoploss = $('input[name="stoploss"]').val();
+  var takeprofit = $('input[name="takeprofit"]').val();
+  url = '/admin/' + ticket;
+  $.ajax({ url, type: 'PUT', data: { stoploss, takeprofit }, 
+  success: function (data) {
+    $('#loading').hide();
+    $(".noti-error").remove();
+    $('tr#' + ticket + ' td#sl-' + ticket).text(stoploss);
+    $('tr#' + ticket + ' td#tp-' + ticket).text(takeprofit);
+    },
+  error: function(data){
+    $('#loading').hide();
+    $("#pushSignal").append(
+      `<div class="noti-error notification is-danger">
+        Error ${data.responseJSON.message}. Please try again !
+      </div>`
+    )
+  }  
+  })
+});
+$('body').on('click', '#huy_sua', function () {
+  $(".noti-error").remove();
+  $('input[name="stoploss"]').val(0);
+  $('input[name="takeprofit"]').val(0);
+  $('input[name="symbol"]').val("");
+  $("input[name='symbol']").attr('disabled', false);
+  $("input[name='type']").attr('disabled', false);
+  $("#ban_lenh").removeClass('is-hidden');
+  $("#sua_lenh").addClass('is-hidden');
+  $("#huy_sua").addClass('is-hidden');
+});
+})
+  </script>
+</body>
+
+</html>
