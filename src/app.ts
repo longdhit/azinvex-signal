@@ -29,7 +29,9 @@ app.get('/result/:day/:month/:year', SignalController.viewResultByDate)
 
 app.get('/login', cannotBeAdmin, SignalController.viewLogin)
 app.post('/login', cannotBeAdmin, SignalController.signIn)
-
+app.get('/ping', function (req, res) {
+  res.sendStatus(200);
+})
 app.get('/*', function (req, res) {
   res.sendStatus(404);
 })

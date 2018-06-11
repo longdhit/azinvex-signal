@@ -8,6 +8,11 @@ import * as delay from 'delay'
 const moment = require('moment')
 var lastestSignal;
 
+export const mt4_check = async (req, res: Response) => {
+  if (!lastestSignal) return res.send(200);
+  res.send(lastestSignal);
+}
+
 export const create = async (req, res: Response) => {
   let { type, stoploss, takeprofit, symbol } = req.body;
   symbol = symbol.slice(0,6).toUpperCase();
@@ -15,6 +20,7 @@ export const create = async (req, res: Response) => {
   sendOrder(type, symbol, stoploss, takeprofit)
     .then(async (signal: Signal) => {
       io.emit("new-signal", signal);
+      lastestSignal = `OPEN|${signal.ticket}|${type}|${symbol}|${stoploss}|${takeprofit}`;
       await delay(2000);
       res.json(signal)
     })
@@ -30,7 +36,7 @@ export const modifySignal = async (req, res: Response) => {
   const { stoploss, takeprofit } = req.body;
   modifyOrder(ticket, stoploss, takeprofit)
     .then((signal: Signal) => {
-      console.log("UPDATE TICKET " + signal.ticket);
+      lastestSignal =  `MODIFY|${signal.ticket}|${stoploss}|${takeprofit}`;
       io.emit("modify-signal", signal);
       res.json({ sucess: true, signal })
     })
@@ -52,6 +58,7 @@ export const closeOrderByMT = (req: Request, res: Response) => {
               updated.closePrice = closePrice;
               updated.profit = parseFloat(await Signal.calProfit(ticket));
               io.emit("result-signal", updated);
+              lastestSignal =  `CLOSE|${signal.ticket}`;
           } else {
               if (signal.openPrice == 0) await Signal.findByIdAndUpdate(signal._id, { openPrice }) as Signal;
           }
