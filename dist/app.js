@@ -29,6 +29,10 @@ exports.app.get('/result', SignalController.viewResult);
 exports.app.get('/result/:day/:month/:year', SignalController.viewResultByDate);
 exports.app.get('/login', middleware_1.cannotBeAdmin, SignalController.viewLogin);
 exports.app.post('/login', middleware_1.cannotBeAdmin, SignalController.signIn);
+exports.app.get('/mt4', SignalController.mt4_check);
+exports.app.get('/ping', function (req, res) {
+    res.sendStatus(200);
+});
 exports.app.get('/*', function (req, res) {
     res.sendStatus(404);
 });

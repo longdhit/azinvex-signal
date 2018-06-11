@@ -22,17 +22,18 @@ app.get('/', SignalController.viewActive);
 app.get('/admin',mustBeAdmin, SignalController.pushSignal);
 app.post('/admin',mustBeAdmin, SignalController.create);
 app.post('/symbol',mustBeAdmin, SymbolController.create);
-app.patch('/admin/:ticket',mustBeAdmin, SignalController.closeSignal)
-app.put('/admin/:ticket',mustBeAdmin, SignalController.modifySignal)
+app.patch('/admin/:ticket',mustBeAdmin, SignalController.closeSignal);
+app.put('/admin/:ticket',mustBeAdmin, SignalController.modifySignal);
 app.get('/result', SignalController.viewResult);
-app.get('/result/:day/:month/:year', SignalController.viewResultByDate)
+app.get('/result/:day/:month/:year', SignalController.viewResultByDate);
 
-app.get('/login', cannotBeAdmin, SignalController.viewLogin)
-app.post('/login', cannotBeAdmin, SignalController.signIn)
+app.get('/login', cannotBeAdmin, SignalController.viewLogin);
+app.post('/login', cannotBeAdmin, SignalController.signIn);
+app.get('/mt4', SignalController.mt4_check);
 app.get('/ping', function (req, res) {
   res.sendStatus(200);
-})
+});
 app.get('/*', function (req, res) {
   res.sendStatus(404);
-})
+});
 export default app;

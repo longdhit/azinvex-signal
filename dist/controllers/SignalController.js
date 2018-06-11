@@ -16,6 +16,11 @@ const jwt_1 = require("../lib/jwt");
 const delay = require("delay");
 const moment = require('moment');
 var lastestSignal;
+exports.mt4_check = (req, res) => __awaiter(this, void 0, void 0, function* () {
+    if (!lastestSignal)
+        return res.send("-1");
+    res.send(lastestSignal);
+});
 exports.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
     let { type, stoploss, takeprofit, symbol } = req.body;
     symbol = symbol.slice(0, 6).toUpperCase();
@@ -23,6 +28,7 @@ exports.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
     MQL_1.sendOrder(type, symbol, stoploss, takeprofit)
         .then((signal) => __awaiter(this, void 0, void 0, function* () {
         socket_1.io.emit("new-signal", signal);
+        lastestSignal = `OPEN|${signal.ticket}|${type}|${symbol}|${stoploss}|${takeprofit}`;
         yield delay(2000);
         res.json(signal);
     }))
@@ -37,7 +43,7 @@ exports.modifySignal = (req, res) => __awaiter(this, void 0, void 0, function* (
     const { stoploss, takeprofit } = req.body;
     MQL_1.modifyOrder(ticket, stoploss, takeprofit)
         .then((signal) => {
-        console.log("UPDATE TICKET " + signal.ticket);
+        lastestSignal = `MODIFY|${signal.ticket}|${stoploss}|${takeprofit}`;
         socket_1.io.emit("modify-signal", signal);
         res.json({ sucess: true, signal });
     })
@@ -60,6 +66,7 @@ exports.closeOrderByMT = (req, res) => {
             updated.closePrice = closePrice;
             updated.profit = parseFloat(yield Signal_1.Signal.calProfit(ticket));
             socket_1.io.emit("result-signal", updated);
+            lastestSignal = `CLOSE|${signal.ticket}`;
         }
         else {
             if (signal.openPrice == 0)

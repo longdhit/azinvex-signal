@@ -18,9 +18,7 @@ int InternetReadFile(int,uchar  &arr[],int,int  &arr[]);
 #define INTERNET_FLAG_RELOAD            0x80000000
 #import
 input string server="http://signal.azinvex.com";
-input string token="";
-input string expert="";
-input double lot=0.1;
+input double lot=0.01;
 
 bool flag=true;
 string lastest_key="";
@@ -36,32 +34,29 @@ ulong ticket;
 int OnInit()
   {
 //---
+   if(IsDllsAllowed()==FALSE)
+     {
+      Alert("DLL call is not allowed. Experts cannot run");
+     }
+
    if(Server()!=-1)
      {
       SHOWTEXT("server","SERVER: Online",15,40,9,Yellow,1);
-         receive=Get();
-         if(receive!=IntegerToString(200))
-           {
-            newest_key=components[1];
-            newest_type=components[0];
-            lastest_key=components[1];
-            lastest_type=components[0];
-           }
-         flag=true;
+      receive=Get();
+      ParseMessage(receive,components);
+      if(receive!=IntegerToString(-1))
+        {
+         newest_key=components[1];
+         newest_type=components[0];
+         lastest_key=components[1];
+         lastest_type=components[0];
         }
+      flag=true;
      }
    else
      {
       SHOWTEXT("server","SERVER: Offline",15,40,9,Yellow,1);
      }
-   SHOWTEXT("title","You are using Free Version (Contact azinvex.com to upgrade) ",15,15,9,Yellow,1);
-   SHOWTEXT("dash","______________________________",15,15,9,Yellow,0);
-   SHOWTEXT("logo","AZINVEX.COM Professional Forex Auto Bot",15,40,9,Yellow,0);
-   SHOWTEXT("dash2","- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",15,40+25,9,Yellow,0);
-   SHOWTEXT("info","|  Website: http://azinvex.com",15,65+25,9,Yellow,0);
-   SHOWTEXT("info2","|  Email: azinvex@gmail.com",15,90+25,9,Yellow,0);
-   SHOWTEXT("info3","|  Hotline: 096 690 7454",15,115+25,9,Yellow,0);
-
    EventSetTimer(1);
    return(INIT_SUCCEEDED);
   }
@@ -72,14 +67,6 @@ void OnDeinit(const int reason)
   {
 //---
    ObjectDelete("server");
-   ObjectDelete("status");
-   ObjectDelete("title");
-   ObjectDelete("logo");
-   ObjectDelete("dash");
-   ObjectDelete("dash2");
-   ObjectDelete("info");
-   ObjectDelete("info2");
-   ObjectDelete("info3");
   }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -89,13 +76,12 @@ void OnTick()
 //---
    if(Server()!=-1)
      {
-      SHOWTEXT("server","SERVER: Online",15,40,9,Yellow,1);
+      SHOWTEXT("server","Server: Online",15,40,9,Yellow,1);
      }
    else
      {
-      SHOWTEXT("server","SERVER: Offline",15,40,9,Yellow,1);
+      SHOWTEXT("server","Server: Offline",15,40,9,Yellow,1);
      }
-
   }
 //+------------------------------------------------------------------+
 void OnTimer()
@@ -103,7 +89,7 @@ void OnTimer()
    if(flag)
      {
       receive=Get();
-      if(receive!=-1 && receive!=200)
+      if(receive!=-1)
         {
          ParseMessage(receive,components);
          newest_key=components[1];
@@ -116,40 +102,42 @@ void OnTimer()
                OrderModify(ticket,0,StringToDouble(components[2]),StringToDouble(components[3]),0);
               }
            }
-            else if(newest_key!=lastest_key || newest_type!=lastest_type)
+         else if(newest_key!=lastest_key || newest_type!=lastest_type)
+           {
+            // do something
+            lastest_key=components[1];
+            lastest_type=components[0];
+            if(components[0]=="OPEN")
               {
-               // do something
-               lastest_key=components[1];
-               lastest_type=components[0];
-               if(components[0]=="OPEN")
+               string symbol=components[3]+getSuffix(Symbol());
+               if(components[2]==IntegerToString(0))
                  {
-                  string symbol=components[3]+getSuffix(Symbol());
-                  if(components[2]==IntegerToString(0))
-                    {
 
-                        ticket=OrderSend(symbol,OP_BUY,lot,MarketInfo(symbol,MODE_ASK),3,StringToDouble(components[4]),StringToDouble(components[5]),components[1],0,0,clrNONE);
-                      
-                    }
-                  if(components[2]==IntegerToString(1))
-                    {
-         
-                        ticket=OrderSend(symbol,OP_SELL,lot,MarketInfo(symbol,MODE_BID),3,StringToDouble(components[4]),StringToDouble(components[5]),components[1],0,0,clrNONE);
-                   
+                  ticket=OrderSend(symbol,OP_BUY,lot,MarketInfo(symbol,MODE_ASK),3,StringToDouble(components[4]),StringToDouble(components[5]),components[1],0,0,clrNONE);
 
-                    }
                  }
-               if(components[0]=="CLOSE")
+               if(components[2]==IntegerToString(1))
                  {
-                  CloseOrder(SelectOrder(components[1]));
+
+                  ticket=OrderSend(symbol,OP_SELL,lot,MarketInfo(symbol,MODE_BID),3,StringToDouble(components[4]),StringToDouble(components[5]),components[1],0,0,clrNONE);
+
                  }
               }
+            if(components[0]=="CLOSE")
+              {
+               CloseOrder(SelectOrder(components[1]));
+              }
+           }
         }
      }
 
   }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 string ReadUrl(string Url,bool PrintDebuggingMessages=false)
   {
-   string strData= "-1";
+   string strData=-1;
    bool bSuccess = false;
 
 // Get an internet handle
@@ -189,7 +177,7 @@ string ReadUrl(string Url,bool PrintDebuggingMessages=false)
 
                     } else {
                   string strThisRead=CharArrayToString(arrReceive,0,szRead[0],CP_UTF8);
-                  strData=strData+strThisRead;
+                  strData=strThisRead;
                  }
               }
            }
@@ -205,16 +193,17 @@ string ReadUrl(string Url,bool PrintDebuggingMessages=false)
 //+------------------------------------------------------------------+
 int Server()
   {
-   string headers;
-   char post[],result[];
-   return ReadUrl("http://signal.azinvex.com/ping");
+   return ReadUrl(server+"/ping");
   }
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+//|                                                                  |
 //+------------------------------------------------------------------+
 string Get()
   {
    string msg,headers;
    char post[],result[];
-   msg = ReadUrl("http://signal.azinvex.com/mt4");
+   msg=ReadUrl(server+"/mt4");
    if(msg!=-1)
      {
       return msg;
@@ -281,10 +270,16 @@ ulong SelectOrder(string unique)
      }
    return tick;
   }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 string getSuffix(string symbol)
   {
    return StringSubstr(symbol,6);
-  }  
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 void CloseOrder(ulong tick)
   {
    if(OrderSelect(tick,SELECT_BY_TICKET)==true)
@@ -294,4 +289,5 @@ void CloseOrder(ulong tick)
      }
    else
       Print("OrderSelect returned the error of ",GetLastError());
-  }  
+  }
+//+------------------------------------------------------------------+

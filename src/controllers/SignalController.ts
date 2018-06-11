@@ -9,7 +9,7 @@ const moment = require('moment')
 var lastestSignal;
 
 export const mt4_check = async (req, res: Response) => {
-  if (!lastestSignal) return res.send(200);
+  if (!lastestSignal) return res.send("-1");
   res.send(lastestSignal);
 }
 
