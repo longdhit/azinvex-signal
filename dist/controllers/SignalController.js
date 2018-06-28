@@ -75,7 +75,7 @@ exports.closeOrderByMT = (req, res) => {
     })).catch(error => { return; });
 };
 exports.trigger = (req, res) => {
-    const signal = Signal_1.Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger: true });
+    const signal = Signal_1.Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger: 1 });
     if (!signal)
         return res.redirect("/admin");
     return res.redirect("/admin");

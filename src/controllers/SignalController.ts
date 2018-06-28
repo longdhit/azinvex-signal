@@ -66,7 +66,7 @@ export const closeOrderByMT = (req: Request, res: Response) => {
 }
 
 export const trigger = (req: Request, res: Response) => {
-  const signal = Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger:true })
+  const signal = Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger:1 })
   if (!signal) return res.redirect("/admin")
   return res.redirect("/admin")
 }

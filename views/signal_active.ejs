@@ -104,7 +104,7 @@
             const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
             const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
             var trig = `<div class="plan-header">${symbol}</div>`
-            if(trigger){
+            if(trigger == true){
               trig =`<div class="plan-header tooltip" data-tooltip="Tooltip Text">${symbol}</div>/div>`
             }
             if(closeAt == 0){ 

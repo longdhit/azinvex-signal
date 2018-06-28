@@ -202,13 +202,13 @@
                      listSignal.forEach((signal, index) => {
                      const { _id,typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, trigger} = signal;
                      var type="BUY";
-                     var trig = `<td> <a href="/trigger/${ticket}"><%= ticket %></a> </td>`
+                     var trig = `<td> <a href="/trigger/${ticket}">${ticket}</a> </td>`
                      if(typeSignal) type="SELL"
-                     if(trigger) trig = `<td><%= ticket %></td>`
+                     if(trigger) trig = `<td>${ticket}</td>`
                      %>
                 <tr id="<%= ticket %>">
-                  <td> <a href="/trigger/<%= ticket %>"<%= ticket %></a> </td>
-                  <%= trig %>
+        
+                  <%- trig %>
                   <td> <%= type %> </td>
                   <td> <%= symbol %> </td>
                   <td> <%= openPrice %> </td>
