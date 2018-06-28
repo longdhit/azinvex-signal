@@ -69,7 +69,7 @@ export const trigger = async (req: Request, res: Response) => {
   const signal = await Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger: true })
 
   if (!signal) return res.redirect("/admin")
-  return res.json(signal)
+  return res.redirect("/admin")
 }
 /////// VIEWS
 export const pushSignal = async (req, res: Response) => {
