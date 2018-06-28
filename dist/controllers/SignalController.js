@@ -78,7 +78,7 @@ exports.trigger = (req, res) => {
     const signal = Signal_1.Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger: 1 });
     if (!signal)
         return res.redirect("/admin");
-    return res.redirect("/admin");
+    return res.json(signal);
 };
 /////// VIEWS
 exports.pushSignal = (req, res) => __awaiter(this, void 0, void 0, function* () {
