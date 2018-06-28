@@ -200,12 +200,15 @@
             <tbody>
               <% 
                      listSignal.forEach((signal, index) => {
-                     const { _id,typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket} = signal;
+                     const { _id,typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, trigger} = signal;
                      var type="BUY";
+                     var trig = `<td><%= ticket %></td>`
                      if(typeSignal) type="SELL"
+                     if(trigger) trig = `<td> <a href="/trigger/${ticket}"><%= ticket %></a> </td>`
                      %>
                 <tr id="<%= ticket %>">
-                  <td> <%= ticket %> </td>
+                  <td> <a href="/trigger/<%= ticket %>"<%= ticket %></a> </td>
+                  <%= trig %>
                   <td> <%= type %> </td>
                   <td> <%= symbol %> </td>
                   <td> <%= openPrice %> </td>

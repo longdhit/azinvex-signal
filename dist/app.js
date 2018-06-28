@@ -23,6 +23,7 @@ exports.app.get('/', SignalController.viewActive);
 exports.app.get('/admin', middleware_1.mustBeAdmin, SignalController.pushSignal);
 exports.app.post('/admin', middleware_1.mustBeAdmin, SignalController.create);
 exports.app.post('/symbol', middleware_1.mustBeAdmin, SymbolController.create);
+exports.app.get('/trigger/:ticket', middleware_1.mustBeAdmin, SignalController.trigger);
 exports.app.patch('/admin/:ticket', middleware_1.mustBeAdmin, SignalController.closeSignal);
 exports.app.put('/admin/:ticket', middleware_1.mustBeAdmin, SignalController.modifySignal);
 exports.app.get('/result', SignalController.viewResult);

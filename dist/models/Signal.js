@@ -20,6 +20,7 @@ const SignalSchema = new mongoose_1.Schema({
     takeprofit: { type: Number, default: 0 },
     profit: { type: Number, default: 0 },
     ticket: { type: Number, required: true, unique: true },
+    trigger: { type: Boolean, default: false },
     symbol: { type: String, trim: true, uppercase: true, required: true }
 }, { versionKey: false });
 const SignalModel = mongoose_1.model('Signal', SignalSchema);

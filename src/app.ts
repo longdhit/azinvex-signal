@@ -22,6 +22,7 @@ app.get('/', SignalController.viewActive);
 app.get('/admin',mustBeAdmin, SignalController.pushSignal);
 app.post('/admin',mustBeAdmin, SignalController.create);
 app.post('/symbol',mustBeAdmin, SymbolController.create);
+app.get('/trigger/:ticket', mustBeAdmin, SignalController.trigger);
 app.patch('/admin/:ticket',mustBeAdmin, SignalController.closeSignal);
 app.put('/admin/:ticket',mustBeAdmin, SignalController.modifySignal);
 app.get('/result', SignalController.viewResult);

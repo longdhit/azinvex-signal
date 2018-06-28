@@ -64,6 +64,12 @@ export const closeOrderByMT = (req: Request, res: Response) => {
           }
       }).catch(error => { return });
 }
+
+export const trigger = (req: Request, res: Response) => {
+  const signal = Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger:true })
+  if (!signal) return res.redirect("/admin")
+  return res.redirect("/admin")
+}
 /////// VIEWS
 export const pushSignal = async (req, res: Response) => {
   moment.locale('vi');

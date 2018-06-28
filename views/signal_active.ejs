@@ -8,6 +8,7 @@
     </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
     <link rel="stylesheet" href="/css/bulma-pricingtable.min.css">
+    <link rel="stylesheet" href="/css/bulma-tooltip.min.css">
     <link rel="stylesheet" href="/css/custom.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -98,15 +99,18 @@
       <div class="pricing-table is-horizontal">     
           <%  
           signalList.forEach((signal, index) => {
-            const { typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, profit, status,closeAt,closePrice} = signal;
+            const { typeSignal, openPrice, stoploss, takeprofit, startAt, symbol, ticket, profit, status,closeAt,closePrice, trigger} = signal;
             moment.locale('vi-VN');
             const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
             const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
+            var trig = `<div class="plan-header">${symbol}</div>`
+            if(trigger){
+              trig =`<div class="plan-header tooltip" data-tooltip="Tooltip Text">${symbol}</div>/div>`
+            }
             if(closeAt == 0){ 
           %>          
           <div id="<%= ticket %>" class="pricing-plan">
-            <div class="plan-header"><%= symbol %>
-            </div>
+            <%= trig %>
             <div class="plan-items">
               <div class="plan-item">Openprice:  
                 <strong><%= openPrice %>
