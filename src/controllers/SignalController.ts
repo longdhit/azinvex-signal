@@ -65,8 +65,8 @@ export const closeOrderByMT = (req: Request, res: Response) => {
       }).catch(error => { return });
 }
 
-export const trigger = (req: Request, res: Response) => {
-  const signal = Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger:1 })
+export const trigger = async (req: Request, res: Response) => {
+  const signal = await Signal.findOneAndUpdate({ ticket: req.params.ticket }, { trigger: true })
 
   if (!signal) return res.redirect("/admin")
   return res.json(signal)
