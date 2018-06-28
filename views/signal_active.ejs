@@ -103,7 +103,7 @@
             moment.locale('vi-VN');
             const dateclose = moment(closeAt).format('HH:mm DD/MM/YYYY');
             const datestart = moment(startAt).format('HH:mm DD/MM/YYYY');
-            var trig = `<div class="plan-header">${symbol}</div>`
+            var trig = `<div class="plan-header has-text-dark">${symbol}</div>`
             if(trigger == true){
               trig =`<div class="plan-header tooltip is-tooltip-multiline is-tooltip-danger" data-tooltip="Lệnh này đóng phân nửa lệnh, dời stop loss xuống tại điểm entry">${symbol}</div>`
             }
